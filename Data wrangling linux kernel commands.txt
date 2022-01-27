@@ -1,0 +1,242 @@
+
+
+******************************************************* COMMANDS FOR DATA WRANGLING **********************************************************************
+
+																	*** SED ***
+- Syntax: $sed [options] [script] infile > outfile
+
+[options] :  set specific properties, some of the most used are:
+
+	-n, --quiet, --silent : Suppress automatic printing of pattern space	
+	-i[SUFFIX], --in-place[=SUFFIX] : Edit files in place. If suffix extension is added, it makes a backup with file extension SUFFIX.	
+	-s, --separate: Consider files as separate (rather than as a single continuous long stream)	
+	--help: display a help message	
+	--version: Output version information
+	
+More options can be found here: https://www.computerhope.com/unix/used.htm
+
+[script] : definition of operations to carry over the data. They're written between single quotes, and more than one can be executed at once if separated by ';'. 
+
+For example:
+
+*****************************************************************************************************************************
+
+	-Trimming scripts:
+
+'s/^ *//' => left trim , can be executed like $sed 's/^ *//' infile > outfile, or directly in the same file: $sed -i 's/^ *//' infile (be cautious while using -i flag if the SUFFIX argument is not included; it will overwrite the file without backing).
+
+'s/ *$//' => right trim
+
+These two scripts can be gathered into a single sed line: sed 's/^ *//; s/ *$//' infile
+
+*****************************************************************************************************************************
+
+	-Erasing/Deleting scripts: https://www.folkstalk.com/2013/03/sed-remove-lines-file-unix-examples.html
+
+'nd' => delete the nth line
+
+'$d' => delete last line
+
+'x,yd' => erase lines in range [x,y]
+
+'nth,$d' => delete from nth line to last one
+
+'/^$/d' => remove empty lines (if not working, try $ grep . infile.txt > outfile.txt; or grep "\S")
+
+'/^\s*$/d' => delete lines which may contain white space
+
+'/^x/d' => delete lines that begin with specific character (x in this example)
+
+'/^[A-Z]*$/d' => delete lines which are in capital letters
+
+'/pattern/d' => delete lines that contain a pattern (specific string)
+
+'/pattern/,$d' => delete lines starting from a pattern till the last one
+
+'${/pattern/d;}'=> delete last line only if contains the pattern
+
+*****************************************************************************************************************************
+
+	- Replacing scripts: https://www.folkstalk.com/2012/01/sed-command-in-unix-examples.html
+	
+'s/string1/string2/' => Replace (or substitute) "string1" with "string2". By default, it will only replace the first occurrence of the pattern "string1" in each line. A numerical flag can be added to replace the second, third..
+
+'s/string1/string2/n' => This will replace the nth occurrence(n should be substitute by 2,3,4...in the script) of "string1" in each line. But, if you would like to replace all the occurrences of "string1" in the file:
+
+'s/string1/string2/g' => Replace all occurrences of "string1" with "string2" in the file. g stands for 'global replacement'. If you would like to replace from the nth occurrence to all occurrences in a line:
+
+'s/string1/string2/ng' where n=1,2,3....
+
+'n s/string1/string2/' infile => It restricts the replacing script to the nth line. 
+
+'s/,/ /g' => replacing commas with spaces.
+
+'x,y s/string1/string2/' => Replace "string1" with "string2" in the lines range [x,y]
+
+*****************************************************************************************************************************
+
+	- Adding scripts:
+	
+'$a\' => Add an empty line at the end
+
+'s/^/PREFIX/' => Add a prefix to each line. 
+
+*****************************************************************************************************************************
+
+	- Extracting scripts:
+	
+sed -n 1,1000p filename > newfile ************ Extract range of lines/rows (in this case, will extract first 1,000 lines without printing patter space)
+
+*****************************************************************************************************************************
+
+	- Encoding characters erasing:
+	
+Sometimes the .txt files we're parsing is encoded in a different format as Linux uses (UTF-8, 8-bit Unicode transformation format). Windows .txt files are encoded in UTF-16 (Windows implementation of Unicode), so the 'empty spaces', 'new lines',etc... characters will not show up when the file is opened in Linux. These characters, that uses to appear at the beginning or end of the files/lines, can cause problems while running the ATS, since the program will read them but return an empty space/string error. A way to check if some of this characters are present in the file we want to wrangle is opening and comparing against itself using 'Beyond Compare' software. In the right upper top corner of each file window, there's a Encoding dropping box where the type of encoding can be easily changed. If you've already discovered which characters are giving issues, you can easily delete them with the erasing command from above:
+
+'/pattern/d' => delete lines that contain a pattern (specific string)
+
+You can also try the following scripts that will delete hexadecimal characters:
+
+'1s/^\xEF\xBB\xBF//'
+
+Moreover, the file can be converted to UTF-8 using the iconv command line tool to convert text from one from of encoding to another. You can check the encoding of a file using the file command with the -i or --mime flag:
+
+$file -i filetocheck 
+
+The syntax for using iconv is as follows: iconv options -f [from-encoding] -t [to-encoding] inputfile -o outputfile
+
+iconv -l will list all known coded characters. 
+
+*****************************************************************************************************************************
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+																	*** AWK ***
+																	
+																	
+- Syntax: $awk [options] '[selection_criteria{action}]' infile > outfile
+
+[options] :
+
+	-f program-file => reads the AWK program source from the file program-file, instead of from the first command line argument.
+	-F fs => use fs for the input field separator
+	
+[selection_criteria{action}] examples:
+
+'{print}' infile => prints every line
+
+'/pattern/ {print}' infile => prints lines which matches the given pattern
+
+'{print $1,$4}' infile => splits a line into fields (delimited by whitespace). In the example, it will split the first 4 words and store them in $1, $2, $3, $4 respectively. $0 represents the whole line. 
+
+'$NF <= 51' infile > outfile  => remove all lines where the range is larger than 51 (for any of the positions)
+
+'{if(min==""){min=max=$1}; if($1>max) {max=$1}; if($1<min) {min=$1}} END {print max, min}' <infile> => determining min/max in a data set.
+
+'{sum+=$1; sumsq+=$1*$1} END {print "stdev = " sqrt(sumsq/NR - (sum/NR)**2)}' infile  => Compute standard deviation of a column of numbers
+
+
+'{for (i=1;i<=500;i+=5) print $i, $(i+1), $(i+2), $(i+3), $(i+4)}' FILE => split a row with 500 numbers into 100 rows containing 5 numbers for the entire file
+
+'($1<=16285 && $2<=16285 && $3<=16285 && $4<=16285 && $5<=16285 && $6<=16285 && $7<=16285 && $8<=16285 && $9<=16285 && $10<=16285 && $11<= 16285 && NF==11)'
+
+'($1<=300 && $2<=300 && $3<=300 && $4<=300 && $5<=300 && $6<=300 && $7<=300 && $8<=300 && $9<=300 && $10<=300 && $11<= 300 && NF==11)'
+
+
+To calculate chi2 statistic using "Total Distribution Counts.txt"
+                              
+$ awk 'NR > 2 {s+=((($2-ExpectedValue)*($2-ExpectedValue))/ExpectedValue)}END{print s}' 'Total Distribution Counts.txt' > Chi2_STatistic.txt
+
+These examples and the in-build awk functions can be found here: https://www.geeksforgeeks.org/awk-command-unixlinux-examples/
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+																	*** CAT ***
+																	
+- Syntax: $cat [option] [infile]
+
+[option] examples:							
+
+$cat XXXX.txt | tail -n +3 | head -n -1 > XXXXXXXX.txt => Removing first 2 lines and the last one	
+	
+$cat infile_XX*.txt > outfileXX.txt => Concatenating files	
+	
+$cat SingleSelection_3.txt | tail -n +3 | head -n -1 | awk '{print$1}' > 001_1S-3.txt	=> Removing first 2 lines and the last one --- Extracting first column
+
+$cat 3Reels.txt | tail -n +3 | head -n -1 | awk '{print$1, $2, $3}' > 3Reels_parsed.txt => Removing first 2 lines and the last one --- Extracting first 3 columns
+
+$cat infile >> outfile --- append infile within outfile (paste infile at the bottom of outfile)
+
+$cat filename | cut -d' ' -f1-5 > outfile ************ Extracting first 5 columns. (the delimiter d field might be optional if tab or blank spaced data)
+
+If not working, please try : cut -c n infile > outfile, where n is the number of columns to extract.
+
+$cat file | awk '{ print NF}' > col.txt    => count the number of columns (space separated) for each line. (To be used when we have Unequal Columns output)
+
+$cat -n infile => see line numbers of infile in the output terminal
+
+Further examples can be found in https://www.tecmint.com/13-basic-cat-command-examples-in-linux/.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+																	*** TR *** (transposing commands)
+
+$ tr ' ' '\n' < stats.txt > statscol.txt  => Transpose from row to column (for Interplay)
+
+
+$ for i in {37..42}; do tr ' ' '\n' < stats_$i.txt >statscol_$i.txt; done   => Transpose from row to column (for Interplay) (use "$i".txt for creating the file i.txt)
+
+-- We can use also awk command for transposing from row to column:
+
+$awk -F, '{for (i=1; i<=NF; i++) a[i,NR]=$i; max=(max<NF?NF:max)} END {for (i=1; i<=max; i++) {for j=1; j<=NR; j++) printf "%s%s, a[i,j]. (j==NR?RS:FS)}}' commas
+
+AWK's default column separator is whitespace (including the tab character), so if the separator is a comma you need to specify (as above).
+
+-- Although the fastest way is using 'Datamash' GNU utility. This is a tool for working with arrays. The default separator for columns in datamash is the tab character, so if your table is comma-separated, you need to specify with a -t option. Transposing is as easy as:
+
+$datamash transpose < infile
+
+Please visit https://www.gnu.org/software/datamash/ for further references about Datamash. 
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+																	*** PR *** 
+																	
+-Syntax: pr [option]...[file] - this command paginates or columnates FILE(s) for printing. The -t option is implied if PAGE_LENGHT is less than or equal to 10. For example:
+																	
+pr -t -e=4 filename > outfile.txt => Replacing tabs with 4 spaces. In this command the option -e[CHAR[WIDTH]], --expand-tabs[=CHAR[WIDTH]] expand input character CHAR (by default, the tab character) to tab width WIDTH (by default, 8) spaces. Since 4 is specified, it will turn the tab into 4 spaces. 
+
+For a comprehensive list of options, please visit : https://www.computerhope.com/unix/upr.htm
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+																	*** LOOPS ***
+
+-'For' loops in python can also be used to parse datasets, 
+
+for x in *.txt; do cat "$x" | remove commas | remove last line > "$x".txt; done
+
+
+for x in *.txt; do head "$x" -n -1 | sed 's/^ *//; s/ *$//; /^$/d; /^\s*$/d' | tr -d '\r' > "$x".txt; done
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+																*** CHECKING COMMANDS (WC)***
+																
+wc command is a powerful (and fast) way to check if the information contained in the datasets (like number of lines to check if sets are completed) is appropriate. here a few examples:
+
+-Syntax: wc [options] filename
+
+[options]:
+	
+-l => prints the number of lines in a file
+-w => prints the number of words in a file
+-w => displays the count of bytes in a file
+-m => prints the count of characters from a file
+-L => prints only the length of the longest line in a file
+
+
+This information can be found in https://www.tecmint.com/wc-command-examples/#:~:text=The%20wc%20(word%20count)%20command,wc%20command%20as%20shown%20below.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
