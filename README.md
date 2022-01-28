@@ -1,5 +1,6 @@
 # DataScience
-Repository for Data Science pieces of code
+Repository for Data Science pieces of code.
+
 Description of the files:
 
 - CSVparser.py : converts commas into blank spaces
