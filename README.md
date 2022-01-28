@@ -5,3 +5,4 @@ Description of the files:
 
 - CSVparser.py : converts commas into blank spaces
 - Iris.py: plots the Iris dataset properties using matplotlib
+- Data wrangling linux kernel commands.txt : UNIX Kernel commands for data cleaning (sed, awk, cat, tr...)
