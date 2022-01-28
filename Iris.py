@@ -21,10 +21,6 @@ class LabeledPoint(NamedTuple):
     point: Vector
     label: str
     
-def distance(v: Vector, w: Vector) -> float:
-    """Computes the distance between v and w"""
-    return math.sqrt(squared_distance(v, w))
-
 def parse_iris_row(row: List[str]) -> LabeledPoint:
     """
     sepal_length, sepal_width, petal_length, petal_width, class
