@@ -1,7 +1,7 @@
 '''
 ############################################################################################################
 
-Script that plot the properties of the different flowers in the famous iris data set using matplotlib.
+Script that plots the properties of the different flowers in the famous Iris data set using matplotlib.
 
 The dataset can be downloaded from https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data, or can be imported using
 data = requests.get("https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data")
