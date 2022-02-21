@@ -1,0 +1,93 @@
+'Small modification of the code that can be found here:
+'https://bioinformaticsworkbook.org/dataWrangling/microsoftExcel/import-multiple-text-files-as-separate-worksheets-in-excel.html
+
+Sub CopyingToExcel()
+
+    Dim TxtFilesToOpen
+    Dim x As Integer
+    Dim n As Integer
+    Dim bookAll As Workbook
+    Dim bookTemp As Workbook
+    Dim sDelimiter As String
+    Dim Sheet_name As Variant
+    Dim New_Name As Variant
+
+    On Error GoTo ErrHandler
+    Application.ScreenUpdating = False
+
+    sDelimiter = "|"
+
+    TxtFilesToOpen = Application.GetOpenFilename _
+      (FileFilter:="Text Files (*.txt), *.txt", _
+      MultiSelect:=True, Title:="Please select .txt files that contains the info")
+
+    If TypeName(TxtFilesToOpen) = "Boolean" Then
+        MsgBox "No Files were selected"
+        GoTo ExitHandler
+    End If
+
+    x = 1
+    
+    Set bookTemp = Workbooks.Open(Filename:=TxtFilesToOpen(x))
+    Set bookAll = ActiveWorkbook
+    bookAll.Worksheets(x).Columns("A:A").TextToColumns _
+      Destination:=Range("A1"), DataType:=xlDelimited, _
+      TextQualifier:=xlDoubleQuote, _
+      ConsecutiveDelimiter:=False, _
+      Tab:=False, Semicolon:=False, _
+      Comma:=False, Space:=True, _
+      Other:=True, OtherChar:="|"
+    x = x + 1
+
+    While x <= UBound(TxtFilesToOpen)
+        Set bookTemp = Workbooks.Open(Filename:=TxtFilesToOpen(x))
+        With bookAll
+            bookTemp.Sheets(1).Move After:=.Sheets(.Sheets.Count)
+            .Worksheets(x).Columns("A:A").TextToColumns _
+              Destination:=Range("A1"), DataType:=xlDelimited, _
+              TextQualifier:=xlDoubleQuote, _
+              ConsecutiveDelimiter:=False, _
+              Tab:=False, Semicolon:=False, _
+              Comma:=False, Space:=True, _
+              Other:=True, OtherChar:=sDelimiter
+        End With
+        x = x + 1
+     Wend
+    
+    For n = 1 To UBound(TxtFilesToOpen)
+           
+    ThisWorkbook.Worksheets(n + 1).Copy After:=ThisWorkbook.Worksheets(n + 1)
+    
+    bookAll.Worksheets(n).Range("A3:B1048575").Copy _
+    ThisWorkbook.Worksheets(n + 1).Range("E4")
+    
+   Next
+   
+    'rename the sheets
+    
+    For n = 1 To UBound(TxtFilesToOpen)
+      
+    Sheet_name = Split(bookAll.Sheets(n).Name, ",", -1)
+            
+    ThisWorkbook.Worksheets(n + 1).Name = Sheet_name(0)
+    
+    Next
+   
+    Application.DisplayAlerts = False
+    Worksheets(n + 1).Delete
+    Application.DisplayAlerts = True
+    
+    bookAll.Close (False)
+
+ExitHandler:
+    Application.ScreenUpdating = False
+    Set bookAll = Nothing
+    Set bookTemp = Nothing
+    Exit Sub
+
+ErrHandler:
+    MsgBox Err.Description
+    Resume ExitHandler
+    
+End Sub
+
