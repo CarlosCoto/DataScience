@@ -7,3 +7,4 @@ Description of the files:
 - Iris.py: plots the Iris dataset properties using matplotlib
 - Data wrangling linux kernel commands.txt : UNIX Kernel commands for data cleaning (sed, awk, cat, tr...)
 - CopyingMacro.txt: VBA Macro that copies the content of .txt files into Excel spreadsheets.
+- DataScienceConcepts.txt:  Overview of concepts
