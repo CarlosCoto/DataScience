@@ -1,0 +1,338 @@
+*********************************************************
+*			    *********************					*
+*			    *      PYTHON		*					*
+*			    *********************					*
+*********************************************************
+
+1. VIRTUAL ENVIRONMENTS -> Anaconda Python Distribution 
+
+	- Create virtual environment-> conda create -n namenv python=3.6
+
+	- Activate -> source activate namenv
+	- Deactivate -> source deactivate 
+
+2. WHITESPACE FORMATTING -> Python uses indentation
+
+	- Backlash (\)-> line continuation
+
+3. MODULES (import, import module as)
+
+4. FUNCTIONS -> takes 0 or more inputs and return the output:
+
+	- def double(x):
+		return x*2
+		
+	- We can assign them to variables and pass them into functions: 
+	
+		def apply_to_one(f):
+			return f(1)
+			
+		my_double = double
+		x= apply_to_one(my_double)
+		
+	- Anonimous functions (lambdas): y = apply_to_one(lambda x: x + 4)
+	
+5. STRINGS -> Double or single quotes 
+	
+	- tab -> "\t"
+	- raw string -> r"\t" (represents \ and t)
+	- Multiline strings: """ (three double quotes)
+	
+6. LISTS [] -> ordered collection (like an array), mutable, time consuming, homogeneous/heterogeneous: 
+
+	- list = [1,2,3] 
+	- list = ["string",0.1,True]
+	- zero element -> list[0]
+	- last element -> list[-1]
+	- slice: i:j -> (inclusive, not inclusive)'; first_three = x[:3] ; one_to_four= x[1:5]
+	  slice can take a third argument -> the stride: every_third = x[::3]
+
+7. TUPLES ()-> immutable lists
+
+	- tuple = (1,2)
+	
+8. DICTIONARIES {} -> associate values with keys
+
+	- users =[{"id":0, "name":"Hero"}, 
+			  {"id":1, "name":"Dunn"}, 		
+						        ...
+			 ]
+			 
+	- Lower case -> .lower()
+	- Split -> .split()
+
+	- defaultdict -> like a regular dictionary, except that when you try to look up a key it doesn’t contain,
+					 it first adds a value for it using a zero-argument function you provided
+					 when you created it. In order to use defaultdicts, you have to import them
+					 from collections: 
+					 
+					 from collections import defaultdict
+					 
+9. COUNTERS -> turns a sequence of values into a defaultdict(int)-like object mapping keys to counts (from collections import Counter)
+
+10. SETS {}-> represents a collection of distinct elements: primes_below_10 = {2, 3, 5, 7}
+			  To create a empty set -> s = set() (s = {} will create a empty dict)
+			  
+	- in is very fast operation on sets
+	- find distinct items in a collection
+			  
+11. CONTROL FLOW -> if, elif, else, while, for, in , continue, break
+
+12. TRUTHINESS -> Booleans are capitalized (True or False)
+
+13. SORTING -> Every python list has a .sort() method | sorted() method returns a new list
+
+14. LIST COMPREHENSIONS -> transform a list into another one by choosing certain elements:
+
+15. AUTOMATED TESTING AND ASSERT -> assert 1 + 1 == 2 , "should be equal to 2"
+	
+16. OBJECT-ORIENTED PROGRAMMING -> Define classes that contains zero or more member functions. By convention -> 1st parameter self and constructr __init__
+
+	class MyClass:
+		def __init__(self, count = 0) #class for counting
+			self.count=count
+			
+	Count1 = MyClass() 				  # initialized to 0
+	Count2 = MyClass(10)			  # starts with count = 10
+
+	- __init__ with double underscores -> "magic" methods or "dunder" methods (double-underscore) and represent "special" behaviours, by convention -> private
+	
+	- Subclasses -> class (MyClass) -> inherit some of functionality of parent class
+		
+17. ITERABLES AND GENERATORS
+
+def generate_range(n):
+	i = 0
+	while i < n:
+		yield i # every call to yield produces a value of the generator
+		i += 1
+
+evens_below_20 = (i for i in generate_range(20) if i % 2 == 0) # generators by using for comprehensions wrapped in parentheses
+		
+	- Data pipelines:
+	
+	# None of these computations *does* anything until we iterate
+	data = natural_numbers()
+	evens = (x for x in data if x % 2 == 0)
+	even_squares = (x ** 2 for x in evens)
+	even_squares_ending_in_six = (x for x in even_squares if x % 10 == 6)
+	# and so on
+	
+	- Enumerate functions: 
+	
+	- names = ["Alice", "Bob", "Charlie", "Debbie"]
+
+	- for i, name in enumerate(names):
+		print(f"name {i} is {name}")
+
+
+18. RANDOMNESS -> 
+	
+	import random 					# pseudorandom
+	random.seed(5) 
+	four_uniform_randoms = [random.random() for _ in range(4)]
+	
+	- randrange(5) 					# choose randomly in [0,5)
+	- randrange(a,b) 				# choose randomly in [a,b)
+	- random.shuffle(list) 
+	- random.choice(list) 			# pick one element, if calls several times chooses elements with replacement
+	- random.sample(list) 			# choose elements without replacement
+	
+19. REGULAR EXPRESSIONS -> import re
+
+	- re.match()  		# starts with? ; returns True or False
+	- re.search()		# searches in
+	- re.split()		# splits words
+	- re.sub()			# replace
+
+20. FUNCTIONAL PROGRAMMING
+	
+	zip & Argument unpacking:
+	
+		- zip: transforms multiple iterables into a single iterable of tuples of corresponding function
+		
+			[pair for pair in zip(list1, list2)]
+		
+		- argument unpacking: (*) asterisk performs argument unpacking:
+		
+			letters, numbers = zip(*pairs)  # uses the elements of pairs as individual arguments to zip
+			
+	args and kwargs: specify a function that takes arbitrary arguments
+	
+		def magic(*args, **kwargs):
+			print("unnamed args:", args)
+			print("keyword args:", kwargs)
+			
+	magic(1, 2, key="word", key2="word2")
+	# prints
+	# unnamed args: (1, 2)
+	# keyword args: {'key': 'word', 'key2': 'word2'}	
+	
+		- args is a tuple of its unnamed arguments
+		- kwargs is a dict of its named arguments
+		
+21. TYPE ANNOTATIONS -> Python is dynamically typed (not need to specify types)
+			
+		def add(a, b)						# without type annotations
+		def add(a: int, b: int) -> int 	 	#with type annotations
+			
+		- inline type hints: from typing import Optional
+		- first-class functions: from typing import Callable
+
+
+
+*********************************************************
+*			   *****************************			*
+*			   *      VISUALIZING DATA	   *			*
+*			   *****************************			*
+*********************************************************
+
+1. MATPLOTLIB -> python -m pip install matplotlib
+
+		- from matplotlib impot pyplot as plt
+		- plt.plot(data)
+		- plt.title("Graph")
+		- plt.ylabel("Y label")
+		- plt.show()
+			
+2. BAR CHARTS -> plt.bar()
+		
+		- plt.xtickts   # label x-axis at bar centers
+		
+3. LINE CHARTS -> plt.plot() -> good choice for showing trends
+
+4. SCATTER PLOTS -> plt.scatter(data1,data2)
+
+- seaborn -> built on top of matplotlib for more complex visualizations
+- Altair -> for declarative visualizations
+- D3.js -> JavaScript library for interactive visualizations for the web
+- Bokeh -> D3-style with Python			
+
+*********************************************************
+*			   *****************************			*
+*			   *      LINEAR ALGEBRA	   *			*
+*			   *****************************			*
+*********************************************************
+
+
+1. VECTORS -> list of floats
+
+	from typing import List
+	Vector = List[float]
+
+	- Build arithmetics since list's aren't vectors!
+	
+2. MATRICES -> list of lists -> Matrix = List[List[float]]
+
+def make_matrix(num_rows: int, num_cols: int,entry_fn: Callable[[int, int], float]) -> Matrix:
+
+"""
+Returns a num_rows x num_cols matrix whose (i,j)-th entry is entry_fn(i, j)
+"""
+	return [[entry_fn(i, j) # given i, create a list
+			  for j in range(num_cols)] # [entry_fn(i, 0), ... ]
+			for i in range(num_rows)] # create one list for each i
+			
+def identity_matrix(n: int) -> Matrix:
+
+"""Returns the n x n identity matrix"""
+
+return make_matrix(n, n, lambda i, j: 1 if i == j else 0)
+
+	- can represent a dataset consisting of multiple vectors by considering each vector as a row of the matrix
+	- we can use an n × k matrix to represent a linear function that maps k-dimensional vectors to n-dimensional vectors
+	- matrices can be used to represent binary relationships (create a matrix A such that A[i][j] is 1 if nodes i and j are connected and 0 otherwise)
+	- Use NumPy!
+	
+
+*********************************************************
+*			   *****************************			*
+*			   *      STATISTICS     	   *			*
+*			   *****************************			*
+*********************************************************
+
+1. DESCRIBING A SINGLE DATASET -> from collections import Counter	
+								  import matplotlib.pyplot as plt
+
+	- len(data)
+	- max(data)
+	- min(data)
+	
+2. CENTRAL TENDENCIES:
+	
+	- mean -> average
+	- median even, median odd, median -> middle-most value (if number of datapoints is odd) or average of two middle-most values (if number of datapoints is even)
+	- quantile -> value under which a certain percentile of the data lies (median is 50% quantile)
+	- mode -> most common value
+		
+	- Dispersion -> how spread the data is (0 -> not spread,)
+	- Variance -> almost average squared deviation from the mean, how a single variable deviates from its mean
+	- Standard deviation -> square root of the variance
+	- Interquantile range -> difference between percentiles
+	
+3. CORRELATION
+
+	- Covariance -> how two variables vary in tandem from their means
+	- Correlation -> divides out the standard deviation of both variables; unitless between -1 (perfect anticorrelation) and 1(perfect correlation)
+
+4. SYMPSON'S PARADOX -> Correlations can be misleading when confounding variables are ignored
+
+-> SciPy , pandas, StatsModels
+
+
+*********************************************************
+*			   *****************************			*
+*			   *      PROBABILITY     	   *			*
+*			   *****************************			*
+*********************************************************
+
+	- P(E)-> probability of event E
+	
+1. DEPENDENCE AND INDEPENDENCE -> E and F are dependent if know if E happens gives info of F happening (and viceversa), otherwise they're independent.
+
+	- P(E,F) = P(E)P(F)
+	
+2. CONDITIONAL PROBABILITY -> P(E|F)=P(E,F)/P(F) -> probability that E happens, given that we know F happens -> P(E,F)=P(E|F)P(E) 
+
+	- If E and F are independent -> P(E|F)=P(E) -> knowing F ocurred gives no info about E ocurred
+	
+3. BAYES'S THEOREM -> "Reversing" conditional probabilities
+
+	P(E|F)= P(F|E)P(E)/[P(F|E)P(E)+P(F|¬E)P(¬E)]
+	
+4. RANDOM VARIABLES -> associated to a probability distribution
+
+5. CONTINUOS DISTRIBUTIONS 
+
+	- Uniform distribution -> equal weight on all numbers between 0 and 1:
+	
+		-Density function 
+		
+			def uniform_pdf(x: float) -> float:
+				return 1 if 0 <= x < 1 else 0
+	
+		- Cummulative distribution function (CDF) -> gives the probability that a random variable is less than or equal to a certain value
+	
+	- Normal distribution -> shaped by mean μ (where the bell is centered) and standard deviation σ (how wide is)
+		
+		- If μ = 0 and σ = 1 -> Standard normal distribution
+		
+6. THE CENTRAL LIMIT THEOREM -> random variable defined as the average of a large number of independent and identically distributed random variables 
+								is itself approximately normally distributed.
+	
+	- Binomial random variables -> Binomial(n,p) -> sum of n independent Bernoulli(p) random variables, each of which equals 1 with probability p and 0 
+													with probability 1-p
+													
+	- Bernoulli variable -> B(p) with mean p, and standard deviation SquareRoot(p(1-p)))	
+
+	- If n gets large, a Binomial(n,p) variable is approximately a normal random variable with mean μ = np and standard deviation σ = SquareRoot(np(1-p))
+	
+- scipy.stats -> contains PDF and CDF of most popular
+													
+													
+													
+													
+	
+	
+
+
