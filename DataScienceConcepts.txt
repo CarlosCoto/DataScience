@@ -1,6 +1,33 @@
+																
+																DATA SCIENCE CONCEPTS
+
+INDEX OF CONTENTS:
+
+1.  PYTHON
+2.  VISUALIZING DATA
+3.  LINEAR ALGEBRA
+4.  STATISTICS
+5.  PROBABILITY
+6.  HYPOTHESIS AND INFERENCE
+7.  GRADIENT DESCENT
+8.  GETTING DATA
+9.  WORKING WITH DATA
+10. MACHINE LEARNING
+11. k-NEAREST NEIGHBORS
+12. NAIVE BAYES 
+13. SIMPLE LINEAR REGRESSION
+14. MULTIPLE REGRESSION
+15. LOGISTIC REGRESSION
+16. DECISSION TREES
+17. NEURAL NETWORKS
+18. DEEP LEARNING
+19. CLUSTERING
+20. NATURAL LANGUAGE PROCESSING
+
+
 *********************************************************
 *		*********************			*
-*		*      PYTHON	    *			*
+*		*     1. PYTHON	    *			*
 *		*********************			*
 *********************************************************
 
@@ -181,9 +208,9 @@ evens_below_20 = (i for i in generate_range(20) if i % 2 == 0) # generators by u
 
 
 *********************************************************
-*		*********************			*
-*		* VISUALIZING DATA  *			*
-*		*********************			*
+*		************************		*
+*		* 2. VISUALIZING DATA  *		*
+*		************************		*
 *********************************************************
 
 1. MATPLOTLIB -> python -m pip install matplotlib
@@ -209,7 +236,7 @@ evens_below_20 = (i for i in generate_range(20) if i % 2 == 0) # generators by u
 
 *********************************************************
 *	  *****************************			*
-*	  *      LINEAR ALGEBRA	   *			*
+*	  *     3. LINEAR ALGEBRA     *			*
 *	  *****************************			*
 *********************************************************
 
@@ -246,7 +273,7 @@ return make_matrix(n, n, lambda i, j: 1 if i == j else 0)
 
 *********************************************************
 *	   *****************************		*
-*	   *        STATISTICS         *		*
+*	   *      4.  STATISTICS       *		*
 *	   *****************************		*
 *********************************************************
 
@@ -281,7 +308,7 @@ return make_matrix(n, n, lambda i, j: 1 if i == j else 0)
 
 *********************************************************
 *		*****************************		*
-*		*       PROBABILITY         *		*
+*		*     5.  PROBABILITY       *		*
 *		*****************************		*
 *********************************************************
 
@@ -305,7 +332,7 @@ return make_matrix(n, n, lambda i, j: 1 if i == j else 0)
 
 	- Uniform distribution -> equal weight on all numbers between 0 and 1:
 	
-		-Density function 
+		- Density function 
 		
 			def uniform_pdf(x: float) -> float:
 				return 1 if 0 <= x < 1 else 0
@@ -327,11 +354,609 @@ return make_matrix(n, n, lambda i, j: 1 if i == j else 0)
 	- If n gets large, a Binomial(n,p) variable is approximately a normal random variable with mean μ = np and standard deviation σ = SquareRoot(np(1-p))
 	
 - scipy.stats -> contains PDF and CDF of most popular
-													
-													
-													
-													
+
+
+*************************************************
+*	**********************************	*
+*	*   6. HYPOTHESIS AND INFERENCE  *      *	
+*	**********************************	*
+*************************************************
+
+1. STATISTICAL HYPOTHESIS TESTING -> H0 null hypothesis and H1 alternative hypothesis
+
+	- Flipping a coin -> probability p of landing heads (p=0.5) tested against alternative hypothesis p ≠ 0.5.
+						 Flipping the coin n times and count X heads. Each trial is a Bernoulli trial Binomial(n,p) random variable
+	
+	- p-Values -> Compute the probability  - assuming H0 is true- that we would see a value at least as extreme as the one we observed
+
+		def two_sided_p_value(x: float, mu: float = 0, sigma: float = 1) -> float:
+		"""
+		How likely are we to see a value at least as extreme as x (in either
+		direction) if our values are from an N(mu, sigma)?
+			"""
+			if x >= mu:
+				# x is greater than the mean, so the tail is everything greater than x
+				return 2 * normal_probability_above(x, mu, sigma)
+			else:
+				# x is less than the mean, so the tail is everything less than x
+				return 2 * normal_probability_below(x, mu, sigma)
+				
+	- Confidence intervals -> confidence interval around the observed value of the parameter.
+							  
+	- p-Hacking -> consequence of the inference from p-values framework
+				
+	- Bayesian Inference -> treating the unknown parameters thenselves as random variables	
+							Start with prior distribution + Observed data + Bayes's Theorem -> posterior distribution
+							If the unknown parameter is a probability -> Beta distribution
+
+
+*********************************************************
+*		*****************************		*
+*		*   7. GRADIENT DESCENT      *		*
+*		*****************************		*
+*********************************************************
+
+
+1. THE IDEA BEHIND GRADIENT DESCENT 
+
+	- gradient -> vector of partial derivatives, input direction the function most quickly increases
+
+	- Pick a random starting point -> compute the gradient -> take small step in its direction -> repeat with new starting point
+
+2. ESTIMATING THE GRADIENT
+
+	def difference_quotient(f: Callable[[float], float],
+							x: float,
+							h: float) -> float:
+	return (f(x + h) - f(x)) / h
+
+
+	def estimate_gradient(f: Callable[[Vector], float],
+						  v: Vector,
+						  h: float = 0.0001):
+	return [partial_difference_quotient(f, v, i, h)
+			for i in range(len(v))]
+
+3. CHOOSING THE RIGHT STEP SIZE
+
+	- Using a fixed step size
+	- Gradually shrinking the step size over time
+	- At each step, choosing the step size that minimizes the value of the objective function
+
+4. MINIBATCH AND STOCHASTIC GRADIENT DESCENT
+
+	- Minibatch gradient descent -> compute the gradient based on a minibatch sampled from the larger dataset
+	- Stochastic gradient descent -> take gradient steps based on one training example at a time
+	
+
+
+*********************************************************
+*		*****************************		*
+*		*    8. GETTING DATA         *		*
+*		*****************************		*
+*********************************************************									
+									
+	- sys.stdin & sys.stdout from the command line							
+									
+	- | pipe character -> use the output of the left as input for the right command	-> 
+		-> cat SomeFile.txt | python egrep.py "[0-9]" | python line_count.py (Unix)
+		-> type SomeFile.txt | python egrep.py "[0-9]" | python line_count.py (Windows)
+									
+	- Regular expresions -> import re								
+	
+	- Unix command line tools -> egrep, sed, cat, awk, grep
+	
+1. READING FILES
+
+	# 'r' means read-only, it's assumed if you leave it out
+	file_for_reading = open('reading_file.txt', 'r')
+	file_for_reading2 = open('reading_file.txt')
+	
+	# 'w' is write -- will destroy the file if it already exists!
+	file_for_writing = open('writing_file.txt', 'w')
+	
+	# 'a' is append -- for adding to the end of the file
+	file_for_appending = open('appending_file.txt', 'a')
+
+	# don't forget to close your files when you're done
+	file_for_writing.close()
+									
+	- Use them within a with block ->	with open(filename) as f:							
+	
+	- Read a whole text file -> Iterate over the lines with for loop
+
+	- .lower(); .split()
+	
+2. DELIMITED FILES
+
+	- comma separated (CSV) -> import csv
+	- tab separated -> \t -> csv.reader(f, delimiter='\t')
+
+3. SCRAPPING THE WEB
+
+	- HTML and the Parsing Thereof -> Beautiful Soup library -> python -m pip install beautifulsoup4 requests html5lib
+	
+	- Using APIs (application programming interfaces) -> request data in structured format
+	
+	- JSON (Javascript Object Notation) -> python json module (import json)
+	
+	- Pandas, Kaggle, Scrapy
+	
+
+*********************************************************
+*		*****************************		*
+*		*    9. WORKING WITH DATA   *		*
+*		*****************************		*
+*********************************************************
+
+1. EXPLORING THE DATA
+
+	- One dimensional -> create histograms
+	
+	- Two dimensional -> scatter the data
+	
+	- Many dimensions -> correlation matrix -> the entry in row i and column j is the correlation between the ith dimension 
+											   and the jth dimension of the data
+						
+						-> Scatter plot matrix (when not many dimensions)
+
+2. USING NAMEDTUPLES -> NamedTuples class (from collections import namedtuple) -> like a tuple but with named slots (unmutable)
+
+3. DATACLASSES -> 	mutable version of NamedTuple -> from dataclasses import dataclass	-> use decorator (@dataclass)
+									
+4. CLEANING AND MUNGING								
+									
+	- Manipulating data
+	
+	- Rescaling -> each dimension has mean 0 nd std deviation 1
+									
+5. TQDM -> library for custom progress bars
+
+6. DIMENSIONALITY REDUCTION
+
+	PCA -> principal component analysis -> extract one or more dimensions that capture as much of the variation in data							
+									
+	- pandas, scikit-learn -> matrix decomposition functions (PCA included)
+
+
+*********************************************************
+*		*****************************		*
+*		*    10. MACHINE LEARNING   *		*
+*		*****************************		*
+*********************************************************
+	
+1. MODELING
+
+	- Creating models that are learned from data (predictive modeling, data mining)
+	
+		- Supervised models -> set of data labeled with the correct answers to learn from
+	
+		- Unsupervised models -> no labels
+	
+		- Semisupervised models -> some data labeled
+	
+		- Online -> model needs to adjust to newly arriving data
+	
+		- Reinforcement -> after making predictions, the model gets a signal indicating how well it did
+	
+	
+2. OVERFITTING AND UNDERFITTING
+
+	- Overfitting -> model performs well on training data but poorly to any new data
+	
+	- Underfitting -> model doesn't perform well even on training data
+	
+	- Most fundamental approach involves using different data to train the model and to test the model
+	
+3. CORRECTNESS
+
+	- Accuracy -> fraction of correct predictions
+
+	- Precision -> measures how accurate our positive predictions were
+	
+	- Recall -> measures what fraction of the positives our model identified
+	
+	- F1 score -> harmonic mean of precision and recall and lies between them
+	
+			def f1_score(tp: int, fp: int, fn: int, tn: int) -> float:
+				p = precision(tp, fp, fn, tn)
+				r = recall(tp, fp, fn, tn)
+				
+				return 2 * p * r / (p + r)
+	
+4. THE BIAS-VARIANCE TRADEOFF -> another way of thinking of overfitting
+
+	- high bias & low variance -> underfitting
+	
+	- low bias & high variance -> overfitting
+
+	- Measures what happen if model is trained with different datasets
+	
+
+5. FEATURE EXTRACTION AND SELECTION
+
+	- when data doesn't have enough features -> model likely to underfit
+
+	- when data has too many features -> model likely to overfit
+
+	- Features -> whatever inputs we provide to our model
+
+		- Naive Bayes classifier
+		
+		- Regression models
+	
+		- Decision trees -> numerical and categorical data
+									
+									
+*********************************************************
+*		******************************		*
+*		*    11. k-NEAREST NEIGHBORS *		*
+*		******************************		*
+*********************************************************								
+									
+1. THE MODEL
+
+	- No math assumptions
+		
+	- Notion of distance
+	
+	- Points close are similar
+									
+	- Datapoints -> Vectors					
+	
+	- Reduce k until find a winner	
+									
+	- Example -> Iris dataset								
+							
+2.	THE COURSE OF DIMENSIONALITY -> k-Nearest neighbors algorithm runs into problem in higher dimensions -> vast -> no points closer to another
+
+	- scikit-learn has nearest neighbors models.						
+									
+									
+*********************************************************
+*		*****************************		*
+*		*    12. NAIVE BAYES        *		*
+*		*****************************		*
+*********************************************************									
+									
+	- Bayes Theorem -> P(E|F)= P(F|E)P(E)/[P(F|E)P(E)+P(F|¬E)P(¬E)]							
+									
+	- The key to Naive Bayes is making the (big) assumption that the presences (or absences)
+	  of each word are independent of one another, conditional on a message being spam or not							
+	
+    - we’ll choose a pseudocount—k—and estimate the probability of seeing the ith word in a spam message as:
+
+	P(Xi|S) = (k + number of spams containing wi)/(2k + number of spams)									
+									
+	- Using model -> SpamAssasin public corpus	
+
+	- glob.glob() -> returns every filename that matches the wildcarded path									
+									
+	- scikit-learn -> BernoulliNB model 								
+									
+									
+*********************************************************
+*	***********************************		*
+*	*    13. SIMPLE LINEAR REGRESSION *		*
+*	***********************************		*
+*********************************************************										
+									
+									
+	- Correlation function -> Nature of relationship between variables?
+
+1. THE MODEL -> yi = βxi + α + εi(error)
+
+	- Coefficient of determination (R-squared) -> fraction of the total variation in the dependent variable that is captured by the model
+									
+	- If theta = [alpha,betha] -> using gradient descent		
+
+	- Maximum Likelihood Estimation
+									
+	L(α,β|xi,yi,σ) = [1/SQRT(2πσ)]exp( − yi − α − βxi)^2/2σ^2								
+									
+									
+*********************************************************
+*		******************************		*
+*		*   14. MULTIPLE REGRESSION  *          *		
+*		******************************		*
+*********************************************************										
+									
+1. THE MODEL
+
+	- input is a vector of k numbers xi1,...xik	-> yi = α + β1xi1 + . . . + βkxik + εi
+
+	- Vector of parameters -> β
+	
+	- Further assumptions
+		
+		- columns of x are linearly independent (no way to write any one as a weighted sum of some of the others)
+		
+		- columns of x are all uncorrelated the the errors ε
+		
+	- Fitting the model -> Choose β to minimize the sum of squarred errors -> use gradient descent
+									
+2. GOODNESS OF FIT
+
+	- Adding new variables to a regression increaes the R-squared
+	
+	- assumption -> the errors εi are independent normal random variables with mean 0 and some shared
+					(unknown) standard deviation σ
+									
+									
+3. STANDARD ERRORS OF REGRESSION COEFFICIENTS
+
+	- repeatedly take a bootstrap_sample of our data and estimate beta based on that sample	
+									
+	- Under the null hypothesis βi = 0 (and with our other assumptions about the distribution of εi), the statistic
+	 
+	   t_j = β_j/σ_j
+									
+	   which is our estimate of βj divided by our estimate of its standard error, follows a Student’s t-distribution with “n − k degrees of freedom.”								
+									
+4. REGULARIZATION 
+
+	- add to the error term a penalty that gets larger as beta gets larger						
+		
+	- then minimize the combined error + penalty
+	
+	- Ridge regression -> penalty proportional to the sum of the squares of the beta_i (except beta_0, constant term)
+	
+	- Lasso regresion 
+	
+		def lasso_penalty(beta, alpha):
+			return alpha * sum(abs(beta_i) for beta_i in beta[1:])
+			
+- scikit-learn -> linear_model module
+	
+- statsmodel -> python module
+	
+	
+*********************************************************
+*		******************************		*
+*		*    15. LOGISTIC REGRESSION * 		*
+*		******************************		*
+*********************************************************
+	
+1. THE PROBLEM 
+
+	- the outputs of the linear model can be huge positive numbers or even negative numbers
+	
+	- The linear regression model assumed that the errors were uncorrelated with the columns of x.
+	
+2. THE LOGISTIC FUNCTION
+
+	def logistic(x: float) -> float:
+		return 1.0 / (1 + math.exp(-x))
+		
+	We’ll use this to fit a model:
+	
+		yi = f(xiβ) + εi
+
+	where f is the logistic function.
+	
+3. SUPPORT VECTOR MACHINES -> finds the hyperplane that maximizes the distane to the nearest point in each class
+
+ - scikit-learn -> logistic regression, support vector machine -> LIBSUM
+
+	
+*********************************************************
+*		*****************************		*
+*		*    16. DECISION TREES     *		*
+*		*****************************		*
+*********************************************************	
+	
+1. WHAT IS A DECISION TREE -> tree structure to represent a number of possible decision paths and an outcome for each path
+	
+	- Classification trees -> categorical outputs
+	
+	- Regression trees -> produce numerical outputs
+	
+2. ENTROPY-> H(S) = -p1log2(p1) -...-pnlog2(pn) 
+	
+3. THE ENTROPY OF A PARTITION
+
+	def partition_entropy(subsets: List[List[Any]]) -> float:
+		"""Returns the entropy from this partition of data into subsets"""
+		total_count = sum(len(subset) for subset in subsets)
+
+		return sum(data_entropy(subset) * len(subset) / total_count
+					for subset in subsets)
+	
+	- low entropy -> splits the data into subsets that themselves have low entropy
+	
+	- high entropy -> subsets that are large and have high entropy (highly uncertain)
+	
+4. CREATING A DECISSION TREE 
+	
+	- decision nodes -> ask a question and direct depending on answer
+	
+	- leaf nodes -> gives predictions
+	
+	- ID3 algorithm (greedy algorithm)-
+	
+5. RANDOM FOREST
+
+	- Decission trees tend to overfit -> Random Forest -> build multiple DT and combine their outputs
+	
+	- scikit-learn -> decision trees , ensemble module
+	- SGBoost -> library for training gradient boosted decision trees
+	
+		
+*********************************************************
+*		*****************************		*
+*		*    17. NEURAL NETWORKS    *		*
+*		*****************************		*
+*********************************************************										
+									
+	- Artificial neural network -> predictive model motivated by the way the brain operates
+
+1. PERCEPTRON -> single neuron with n binary inputs. Computes a weighted sum of its inputs and fires if that weighted sum is 0 or greater
+
+	from scratch.linear_algebra import Vector, dot
+	
+	def step_function(x: float) -> float:
+		return 1.0 if x >= 0 else 0.0
+
+	def perceptron_output(weights: Vector, bias: float, x: Vector) -> float:
+	"""Returns 1 if the perceptron 'fires', 0 if not"""
+	calculation = dot(weights, x) + bias
+	return step_function(calculation)
+
+
+	- AND/OR/NOT gates 
+	
+	- XOR gate cannot be build with perceptron
+
+2. FEED-FORWARD NEURAL NETWORKS
+
+	- approximate with an idealized feed-forward neural network of discrete layers of neurons connected to the next
+	
+3. BACKPROPAGATION -> use data to train neural network -> uses gradient descent or one of its variants
+
+
+*********************************************************
+*		*****************************		*
+*		*    18. DEEP LEARNING      *		*
+*		*****************************		*
+*********************************************************
+
+	- Deep neural networks -> more than one hidden layer 
+
+1. THE TENSOR -> n-dimensional arrays -> list
+	
+2. THE LAYER ABSTRACTION 
+
+	- Layer -> knows how to apply some function to its input and backpropagate gradients
+
+		from scratch.neural_networks import sigmoid
+		
+		class Sigmoid(Layer):
+			def forward(self, input: Tensor) -> Tensor:
+				"""
+				Apply sigmoid to each element of the input tensor,
+				and save the results to use in backpropagation.
+				"""
+				self.sigmoids = tensor_apply(sigmoid, input)
+				return self.sigmoids
+
+			def backward(self, gradient: Tensor) -> Tensor:
+			return tensor_combine(lambda sig, grad: sig * (1 - sig) * grad,
+						  self.sigmoids, 
+						  gradient)
+
+3. THE LINEAR LAYER
+
+	- Represent the dot(weights, inputs) part of the neurons
+	
+	- 3 different schemes:
+		
+		- Choose each value from the random uniform distribution on [0,1] (random.random())
+		
+		- Choose each value randomly from a standard normal distribution
+		
+		- Use Xavier initialization, where each weight is initialized with a random draw from a normal distribution with mean 0
+		  and variance 2/(num_inputs + num_outputs)
+	
+	
+4. NEURAL NETWORKS AS A SEQUENCE OF LAYERS -> ways to combine multiple layes into one
+
+	- Loss and Optimization -> new loss abstraction that encapsulates both the loss computation and the gradient computation
+	
+								class Loss:
+									def loss(self, predicted: Tensor, actual: Tensor) -> float:
+									"""How good are our predictions? (Larger numbers are worse.)"""
+									raise NotImplementedError
+									
+									def gradient(self, predicted: Tensor, actual: Tensor) -> Tensor:
+									"""How does the loss change as the predictions change?"""
+									raise NotImplementedError
+		
+	- Optimizer abstraction of which gradient descent will be specific instance
+	
+	- Optimization that uses momentum -> avoiding overreact to each new gradient
+	
+	- Example -> XOR | tang (hyperbolic tangent)
+	
+5. SOFTMAXES AND CROSS-ENTROPY -> forget about Sigmoid layer nd use the softmax function -> converts a vector of real numbers to a vector of 
+																							probabilities
+	
+	- once the network produces probabilities -> use the cross-entropy function (or negative log likelihood)
+	
+	- our network outputs are probabilities, the crossentropy loss represents the negative log likelihood of the observed data, which means
+	that minimizing that loss is the same as maximizing the log likelihood (and hence the likelihood) of the training data.
+	
+6. DROPOUT -> neural networks are prone to overfit to their training data -> using dropout ->
+
+	- At training time, we randomnly turn off each neuron (replace output with 0) with some fixed probability
+	
+	- At evaluation time, we don't dropout any neurons
+	
+	- Example -> MNIST dataset of handwritten digits
+	
+7. SAVING AND LOADING MODELS -> models take a long time to train -> use json module to serialize models weights to a file
+	
+	- PyTorch for deep learning
+	
+	
+*********************************************************
+*		*****************************		*
+*		*    19. CLUSTERING         *		*
+*		*****************************		*
+*********************************************************	
+	
+	- Unsupervised learning algorithm -> working with unlabeled data
+	
+1. THE IDEA -> data forms clusters
+
+2. THE MODEL -> each input will be a vector in d-dimensional space (list of numbers) -> identify clusters of similar inputs
+
+	- simple method -> k-means -> number of clusters k is chosen in advance -> partition the inputs into sets S1,...,Sk
+
+	- assigning n points to k clusters:
+	
+		1. Start with a set of k-means, which are points in d-dimensional space.
+		2. Assign each point to the mean to which it is closest.
+		3. If no point’s assignment has changed, stop and keep the clusters.
+		4. If some point’s assignment has changed, recompute the means and return to step 2.
+	
+3. CHOOSING K -> plotting the sum of squared errors as a function of k and looking at where the graph 'bends'
+	
+4. BOTTOM-UP HIERARCHICAL CLUSTERING -> alternative approach -> grow clusters from the bottom up
+	
+	- scikit-learn _> sklearn.cluster module (including KMeans and Ward hierarchical clustering)
+	- SciPy -> two models -> scipy.cluster.vq -> k-means & scipy.cluster.hierarchy -> hierarchical clustering
+	
+	
+*********************************************************
+*	**************************************		*
+*	*    19. NATURAL LANGUAGE PROCESSING   		*		
+*	**************************************		*
+*********************************************************
+	
+	
+	
 	
 	
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+									
+									
